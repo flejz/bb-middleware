@@ -19,5 +19,12 @@ class GenericStorage:
     def add(self, data):
         self.list.append(data)
 
+    def pop(self):
+        return self.list.pop()
+
+    def last(self):
+        size = len(self.list)
+        return None if size == 0 else self.list[size - 1]
+
     def is_list(self):
         return self.storage_type == StorageType.LIST
