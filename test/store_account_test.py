@@ -39,7 +39,7 @@ class TestAccountStore(unittest.TestCase):
         with self.assertRaises(AccountTransferNotEnoughFunds):
             self.account_store.transfer(transfer)
 
-    def test_should_get_all_balances(self):
+    def test_should_get_balances(self):
         transfer = { "sender": "abc", "receiver": "xyz", "amount": 3 }
         self.account_store.set_balance("abc", 10)
         self.account_store.set_balance("xyz", 0)
@@ -49,6 +49,39 @@ class TestAccountStore(unittest.TestCase):
         self.assertEqual(len(balances.items()), 2)
         self.assertEqual(balances[get_account_hash("abc")], 7)
         self.assertEqual(balances[get_account_hash("xyz")], 3)
+
+    def test_should_get_balance(self):
+        transfer = { "sender": "abc", "receiver": "xyz", "amount": 3 }
+        self.account_store.set_balance("abc", 10)
+        self.account_store.set_balance("xyz", 0)
+        self.account_store.transfer(transfer)
+
+        self.assertEqual(self.account_store.get_balance("abc"), 7)
+        self.assertEqual(self.account_store.get_balance("xyz"), 3)
+
+    def test_should_get_statement(self):
+        transfer = { "sender": "abc", "receiver": "xyz", "amount": 3 }
+        self.account_store.set_balance("abc", 10)
+        self.account_store.set_balance("xyz", 0)
+        self.account_store.transfer(transfer)
+        self.account_store.transfer(transfer)
+
+        self.assertEqual(self.account_store.get_balance("abc"), 4)
+        self.assertEqual(self.account_store.get_balance("xyz"), 6)
+        self.assertEqual(self.account_store.get_statement("abc"), [transfer, transfer])
+        self.assertEqual(self.account_store.get_statement("xyz"), [transfer, transfer])
+
+    def test_should_revert_a_transfer(self):
+        transfer = { "sender": "abc", "receiver": "xyz", "amount": 3 }
+        self.account_store.set_balance("abc", 10)
+        self.account_store.set_balance("xyz", 0)
+        self.account_store.transfer(transfer)
+        self.account_store.revert(transfer)
+
+        balances = self.account_store.get_balances()
+        self.assertEqual(len(balances.items()), 2)
+        self.assertEqual(balances[get_account_hash("abc")], 10)
+        self.assertEqual(balances[get_account_hash("xyz")], 0)
 
 
 if __name__ == "__main__":

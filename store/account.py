@@ -34,14 +34,20 @@ class AccountStore(GenericStore):
         self.account.update(sender_hash, sender_balance - amount)
         self.account.update(receiver_hash, receiver_balance + amount)
 
-        self.account_transfers.update(sender_hash, transfer)
-        self.account_transfers.update(receiver_hash, transfer)
+        sender_statement = self.get_statement(sender)
+        receiver_statement = self.get_statement(receiver)
+
+        self.account_transfers.update(sender_hash, sender_statement + [transfer])
+        self.account_transfers.update(receiver_hash, receiver_statement + [transfer])
+
+    def get_balances(self):
+        return self.account.get_all()
 
     def get_balance(self, address):
         return self.account.get(get_account_hash(address))
 
-    def get_balances(self):
-        return self.account.get_all()
+    def get_statement(self, address):
+        return self.account_transfers.get(get_account_hash(address)) or []
 
 class AccountSetBalanceException(Exception):
     pass
