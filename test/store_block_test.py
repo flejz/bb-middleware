@@ -1,6 +1,7 @@
 import unittest
 
 from mock.blocks import mock
+from storage.factory import StorageFactory
 from storage.memory import MemoryStorage
 from store.block import BlockStore, BlockRepeatedException
 from model.block import get_block_hash, get_block_height
@@ -11,7 +12,8 @@ block_subset = blocks[:10]
 
 class TestBlockStore(unittest.TestCase):
     def setUp(self):
-        self.block_store = BlockStore(MemoryStorage(), "block")
+
+        self.block_store = BlockStore(StorageFactory(MemoryStorage))
 
     def test_should_add_non_repeated_blocks(self):
         for block in block_subset:

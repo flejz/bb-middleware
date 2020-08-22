@@ -1,24 +1,28 @@
 from storage.generic import GenericStorage
 
 class MemoryStorage(GenericStorage):
-    def __init__(self):
-        self.store = {}
+    def __init__(self, ref, storage_type):
+        GenericStorage.__init__(self, ref, storage_type)
 
-    def persist(self, ref, ref_id = None):
-        if self.store.get(ref) is None:
-            self.store[ref] = {}
-        if ref_id != None and self.store[ref].get(ref_id) is None:
-            self.store[ref][ref_id] = None
+    def persist(self, key = None):
+        if self.hashmap.get(self.ref) is None:
+            self.hashmap[self.ref] = {}
+        if key != None and self.hashmap[self.ref].get(key) is None:
+            self.hashmap[self.ref][key] = None
 
-    def update(self, ref, ref_id, data):
-        self.persist(ref, ref_id)
-        self.store[ref][ref_id] = data
-        return self.store[ref][ref_id]
+    def update(self, key, data):
+        self.persist(key)
+        self.hashmap[self.ref][key] = data
+        return self.hashmap[self.ref][key]
 
-    def get_all(self, ref):
-        self.persist(ref)
-        return self.store[ref]
+    def get(self, key):
+        self.persist(key)
+        return self.hashmap[self.ref][key]
 
-    def get(self, ref, ref_id):
-        self.persist(ref, ref_id)
-        return self.store[ref][ref_id]
+    def get_all(self):
+        if self.is_list():
+            return self.list
+        else:
+            self.persist()
+            return self.hashmap[self.ref]
+

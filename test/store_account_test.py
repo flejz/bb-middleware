@@ -1,12 +1,13 @@
 import unittest
 
+from storage.factory import StorageFactory
 from storage.memory import MemoryStorage
 from store.account import AccountStore, AccountSetBalanceException, AccountTransferNotEnoughFunds
 from model.account import get_account_hash
 
 class TestAccountStore(unittest.TestCase):
     def setUp(self):
-        self.account_store = AccountStore(MemoryStorage(), "account")
+        self.account_store = AccountStore(StorageFactory(MemoryStorage))
 
     def test_should_set_balance_when_non_existent(self):
         self.account_store.set_balance("xyz", 10)
@@ -45,7 +46,6 @@ class TestAccountStore(unittest.TestCase):
         self.account_store.transfer(transfer)
 
         balances = self.account_store.get_balances()
-        print(balances)
         self.assertEqual(len(balances.items()), 2)
         self.assertEqual(balances[get_account_hash("abc")], 7)
         self.assertEqual(balances[get_account_hash("xyz")], 3)

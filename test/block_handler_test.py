@@ -7,6 +7,7 @@ from storage.memory import MemoryStorage
 from store.account import AccountStore
 from store.block import BlockStore
 from store.transfer import TransferStore
+from model.block import get_block_hash
 
 blocks = mock()
 block_balances = blocks[0]
@@ -25,7 +26,7 @@ class TestBalanceBlock(unittest.TestCase):
         self.assertEqual(block_balances["balances"], account_store.get_balances())
 
     def test_block_added_as_last(self):
-        self.assertEqual(block_balances["hash"], block_store.last_hash())
+        self.assertEqual(get_block_hash(block_balances), block_store.last_hash())
 
 if __name__ == "__main__":
     unittest.main()

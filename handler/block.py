@@ -1,5 +1,3 @@
-from handler.transfer import TransferHandler
-
 class BlockHandler():
     def __init__(self, account_store, block_store, transfer_store, transfer_handler):
         self.account_store = account_store
@@ -17,10 +15,10 @@ class BlockHandler():
         return self.account_store.get_balances()
 
     def handle_transfers(self, block):
-        for trasnfer in block["transfers"]:
-            self.transfer_handler.handle_transfer(transfer)
+        for transfer in block["transfers"]:
+            self.transfer_handler.handle_transfer(block, transfer)
 
-        return self.transfer_store.get_transfers(block["hash"])
+        return self.transfer_store.get_transfers_by_block(block)
 
     def handle_block(self, block):
         self.block_store.add(block)
