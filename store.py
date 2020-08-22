@@ -23,8 +23,8 @@ class AccountStore(GenericStore):
     def get_balances(self):
         return self.get_all()
 
-class EventStore(GenericStore):
-    def get_events():
+class TransferStore(GenericStore):
+    def get_transfers(self, block_hash):
         pass
 
 
