@@ -1,7 +1,6 @@
 from store.generic import GenericStore
 from storage.factory import StorageType
-from model.account import get_account_hash
-from model.transfer import get_sender, get_receiver, get_amount
+from model.account import *
 
 class AccountStore(GenericStore):
     def init(self):
@@ -18,6 +17,7 @@ class AccountStore(GenericStore):
         self.account.update(account_hash, amount)
 
     def transfer(self, transfer):
+        # grab data and do some checks
         amount = get_amount(transfer)
 
         sender = get_sender(transfer)
@@ -31,14 +31,25 @@ class AccountStore(GenericStore):
         receiver_balance = self.get_balance(receiver)
         receiver_hash = get_account_hash(receiver)
 
+        # update balance
         self.account.update(sender_hash, sender_balance - amount)
         self.account.update(receiver_hash, receiver_balance + amount)
 
+        # update transfer list
         sender_statement = self.get_statement(sender)
         receiver_statement = self.get_statement(receiver)
 
         self.account_transfers.update(sender_hash, sender_statement + [transfer])
         self.account_transfers.update(receiver_hash, receiver_statement + [transfer])
+
+    def revert(self, transfer):
+        # create a revert event of the given transfer
+        reverted_transfer = transfer.copy()
+        reverted_transfer = set_sender(reverted_transfer, get_receiver(transfer))
+        reverted_transfer = set_receiver(reverted_transfer, get_sender(transfer))
+        reverted_transfer = set_revert_type(reverted_transfer)
+
+        self.transfer(reverted_transfer)
 
     def get_balances(self):
         return self.account.get_all()

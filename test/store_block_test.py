@@ -46,10 +46,6 @@ class TestBlockStore(unittest.TestCase):
         for block in block_subset_h11:
             self.block_store.add_block(block)
 
-        print(len(block_subset_h11))
-        print(list(map(lambda b: b["number"], block_subset_h11)))
-        print(self.block_store.chain_reverted.get_all())
-
         self.assertEqual(self.block_store.get_height(), 1)
 
 if __name__ == "__main__":
