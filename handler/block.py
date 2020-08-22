@@ -1,4 +1,3 @@
-from store import AccountStore, BlockStore
 from handler.transfer import TransferHandler
 
 class BlockHandler():

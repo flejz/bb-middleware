@@ -1,18 +1,20 @@
 import unittest
 
 from mock.blocks import mock
-from provider import MemoryProvider
-from store import *
 from handler.block import BlockHandler
 from handler.transfer import TransferHandler
+from storage.memory import MemoryStorage
+from store.account import AccountStore
+from store.block import BlockStore
+from store.transfer import TransferStore
 
 blocks = mock()
 block_balances = blocks[0]
 
-memory_provider = MemoryProvider()
-account_store = AccountStore(memory_provider, "account")
-block_store = BlockStore(memory_provider, "block")
-transfer_store = TransferStore(memory_provider, "transfer")
+memory_storage = MemoryStorage()
+account_store = AccountStore(memory_storage, "account")
+block_store = BlockStore(memory_storage, "block")
+transfer_store = TransferStore(memory_storage, "transfer")
 
 transfer_handler = TransferHandler(account_store, transfer_store)
 block_handler = BlockHandler(account_store, block_store, transfer_store, transfer_handler)

@@ -1,14 +1,6 @@
-class GenericProvider:
-    def update(self, ref, ref_id, data):
-        pass
+from storage.generic import GenericStorage
 
-    def get(self, ref, ref_id):
-        pass
-
-    def get_all(self, ref):
-        pass
-
-class MemoryProvider(GenericProvider):
+class MemoryStorage(GenericStorage):
     def __init__(self):
         self.store = {}
 

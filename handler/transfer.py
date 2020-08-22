@@ -1,5 +1,3 @@
-from store import AccountStore, TransferStore
-
 class TransferHandler():
     def __init__(self, account_store, transfer_store):
         self.account_store = account_store
