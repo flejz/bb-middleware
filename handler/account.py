@@ -1,10 +1,10 @@
 import statistics
 
-from store.generic import GenericStore
+from handler.generic import GenericHandler
 from storage.factory import StorageType
 from model.account import *
 
-class AccountStore(GenericStore):
+class AccountHandler(GenericHandler):
     def init(self):
         self.account = self.storage_factory.branch('account', StorageType.KEY_VALUE)
         self.account_median = self.storage_factory.branch('account_median', StorageType.KEY_VALUE)

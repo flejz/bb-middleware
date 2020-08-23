@@ -1,29 +1,43 @@
-class BlockHandler():
-    def __init__(self, account_store, block_store, transfer_store, transfer_handler):
-        self.account_store = account_store
-        self.block_store = block_store
-        self.transfer_store = transfer_store
-        self.transfer_handler = transfer_handler
+from handler.generic import GenericHandler
+from storage.factory import StorageType
+from model.block import get_block_hash, get_block_prevhash, get_block_height
 
-    def handle_account_balances(self, block):
-        if "balances" not in block:
-            return None
+class BlockHandler(GenericHandler):
+    def init(self):
+        self.block = self.storage_factory.branch('block', StorageType.KEY_VALUE)
+        self.chain = self.storage_factory.branch('chain', StorageType.LIST)
+        self.chain_reverted = self.storage_factory.branch('chain_reverted', StorageType.LIST)
 
-        for address, amount in block["balances"].items():
-            self.account_store.set_balance(address, amount)
+    def last_hash(self):
+        return self.chain.last()
 
-        return self.account_store.get_balances()
+    def get_height(self):
+        block_hash = self.last_hash()
+        return -1 if block_hash is None else get_block_height(self.block.get(block_hash))
 
-    def handle_transfers(self, block):
-        for transfer in block["transfers"]:
-            self.transfer_handler.handle_transfer(block, transfer)
+    def revert_up_to(self, block, prev_block_hash):
+        if prev_block_hash == None:
+            return
 
-        return self.transfer_store.get_transfers_by_block(block)
+        prev_block = self.block.get(prev_block_hash)
+        if get_block_height(prev_block) >= get_block_height(block):
+            self.chain_reverted.add(prev_block_hash)
+            self.revert_up_to(block, get_block_prevhash(prev_block))
 
-    def handle_block(self, block):
-        self.block_store.add(block)
+    def add_block(self, block):
+        block_hash = get_block_hash(block)
+        if self.block.get(block_hash) != None:
+            raise BlockRepeatedException()
 
-        transfers = self.handle_transfers(block)
-        balances = self.handle_account_balances(block)
+        # revert on reorder
+        self.revert_up_to(block, self.chain.last())
 
-        return transfers, balances
+        # updating chain
+        self.block.update(block_hash, block)
+        self.chain.add(block_hash)
+
+    def get_chain(self):
+        return self.chain.get_all() or []
+
+class BlockRepeatedException(Exception):
+    pass
