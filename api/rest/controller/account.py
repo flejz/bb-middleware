@@ -1,8 +1,7 @@
 from flask import jsonify, request
-from model.account import *
+from model.account import get_address, get_amount
 
 def init(app, account_handler):
-
     @app.route("/account/balance", methods=["GET", "POST"])
     def account_balances():
         if request.method == "GET":
@@ -10,7 +9,9 @@ def init(app, account_handler):
         elif request.method == "POST":
             address = get_address(request.json)
             amount = get_amount(request.json)
-            account_handler.set_balance(address, amount)
+            return account_handler.set_balance(address, amount)
+
+        return None
 
     @app.route("/account/balance/<address>")
     def account_balance(address):

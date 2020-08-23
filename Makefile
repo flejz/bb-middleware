@@ -3,8 +3,11 @@ INTEGRATION_TEST_FILES := test.block_integration_test
 
 .PHONY: test
 
+lint:
+	.venv/bin/pylint api handler storage model
+
 test:
-	python3 -m unittest $(UNIT_TEST_FILES) $(INTEGRATION_TEST_FILES)
+	.venv/bin/python3 -m unittest $(UNIT_TEST_FILES) $(INTEGRATION_TEST_FILES)
 
 install:
 	.venv/bin/pip3 install -r requirements.txt

@@ -7,7 +7,7 @@ class MemoryStorage(GenericStorage):
     def persist(self, key = None):
         if self.hashmap.get(self.ref) is None:
             self.hashmap[self.ref] = {}
-        if key != None and self.hashmap[self.ref].get(key) is None:
+        if key is not None and self.hashmap[self.ref].get(key) is None:
             self.hashmap[self.ref][key] = None
 
     def update(self, key, data):
@@ -33,4 +33,3 @@ class MemoryStorage(GenericStorage):
         else:
             self.persist()
             return self.hashmap[self.ref]
-

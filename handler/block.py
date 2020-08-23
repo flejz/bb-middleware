@@ -1,6 +1,6 @@
 from handler.generic import GenericHandler
 from storage.factory import StorageType
-from model.block import *
+from model.block import get_block_hash, get_block_prevhash, get_block_height, has_block_balances, has_block_transfers, get_block_balances, get_block_transfers
 
 class BlockHandler(GenericHandler):
     def __init__(self, storage_factory, account_handler):
@@ -38,7 +38,7 @@ class BlockHandler(GenericHandler):
         block_hash = get_block_hash(block)
         block_prevhash = get_block_prevhash(block)
         block_height = get_block_height(block)
-        if self.get_block(block_hash) != None:
+        if self.get_block(block_hash) is not None:
             raise BlockRepeatedException()
 
         # grabbind data from the last block
@@ -62,8 +62,8 @@ class BlockHandler(GenericHandler):
                 blocks_to_revert = self.diff_block_chain(last_block, block)
                 blocks_to_apply = self.get_block_chain(block)
         elif block_height == last_block_height:
-                blocks_to_revert = self.diff_block_chain(last_block, block)
-                blocks_to_apply = self.diff_block_chain(block, last_block)
+            blocks_to_revert = self.diff_block_chain(last_block, block)
+            blocks_to_apply = self.diff_block_chain(block, last_block)
 
         # applying reverts and new transfers
         self.revert_block_chain(blocks_to_revert)
@@ -107,9 +107,11 @@ class BlockHandler(GenericHandler):
             block = self.get_block(block_hash)
             self.revert_block(block)
 
-    def get_block_chain(self, block = None, block_chain = []):
-        if block == None:
+    def get_block_chain(self, block = None, block_chain = None):
+        if block is None:
             block = self.last_block()
+        if block_chain is None:
+            block_chain = []
 
         if get_block_height(block) <= 0:
             return block_chain

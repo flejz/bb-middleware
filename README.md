@@ -110,5 +110,10 @@ There is nothing to read, however wiring up would be seamless as it is.
 make test
 ```
 
+## lint
+
+```bash
+make lint
+```
+
 ## to-dos
-- linting

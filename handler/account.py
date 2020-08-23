@@ -2,7 +2,7 @@ import statistics
 
 from handler.generic import GenericHandler
 from storage.factory import StorageType
-from model.account import *
+from model.account import get_amount, get_sender, get_receiver, get_revert, set_sender, set_revert, set_receiver
 
 class AccountHandler(GenericHandler):
     def init(self):
@@ -19,7 +19,7 @@ class AccountHandler(GenericHandler):
 
     def set_balance(self, address, amount):
         balance = self.get_balance(address)
-        if balance != None:
+        if balance is not None:
             raise AccountSetBalanceException()
 
         self.account.update(address, amount)

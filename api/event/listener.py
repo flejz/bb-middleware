@@ -1,7 +1,5 @@
-import json
-
 from handler.account import AccountHandler
-from handler.block import BlockHandler, BlockRepeatedException
+from handler.block import BlockHandler
 from storage.factory import StorageFactory
 from storage.memory import MemoryStorage
 
