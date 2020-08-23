@@ -85,6 +85,19 @@ class TestAccountHandler(unittest.TestCase):
         self.assertEqual(self.account_handler.get_balance("foo"), 10)
         self.assertEqual(self.account_handler.get_balance("bar"), 0)
 
+    def test_should_revert_a_transfer_even_without_enough_funds(self):
+        # the reason this is allowed is that it's only gonna happen given
+        # a chain ov events incoming from new blocks.
+        # after a successfull block revert chain, and the new transfer coming
+        # in the amount value will be correct
+        transfer = { "sender": "foo", "receiver": "bar", "amount": 3 }
+        self.account_handler.set_balance("foo", 0)
+        self.account_handler.set_balance("bar", 0)
+
+        self.account_handler.revert(transfer)
+        self.assertEqual(self.account_handler.get_balance("foo"), 3)
+        self.assertEqual(self.account_handler.get_balance("bar"), -3)
+
     def test_should_calculate_median(self):
         transfers = [
                 { "sender": "foo", "receiver": "bar", "amount": 1 },
