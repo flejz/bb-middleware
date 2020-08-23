@@ -65,5 +65,8 @@ class BlockHandler(GenericHandler):
     def get_chain(self):
         return self.chain.get_all() or []
 
+    def get_chain_reverted(self):
+        return self.chain_reverted.get_all() or []
+
 class BlockRepeatedException(Exception):
     pass
