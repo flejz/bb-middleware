@@ -17,11 +17,14 @@ class BlockHandler(GenericHandler):
 
     def get_height(self):
         block_hash = self.last_hash()
-        return -1 if block_hash is None else get_block_height(self.block.get(block_hash))
+        return -1 if block_hash is None else get_block_height(self.get_block(block_hash))
+
+    def get_block(self, block_hash):
+        return self.block.get(block_hash)
 
     def add_block(self, block):
         block_hash = get_block_hash(block)
-        if self.block.get(block_hash) != None:
+        if self.get_block(block_hash) != None:
             raise BlockRepeatedException()
 
         # processing balances
@@ -52,7 +55,7 @@ class BlockHandler(GenericHandler):
         if prev_block_hash == None:
             return
 
-        prev_block = self.block.get(prev_block_hash)
+        prev_block = self.get_block(prev_block_hash)
         if get_block_height(prev_block) >= get_block_height(block):
             self.revert_transfers(prev_block)
             self.chain_reverted.add(prev_block_hash)

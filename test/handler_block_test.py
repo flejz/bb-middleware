@@ -5,7 +5,7 @@ from handler.account import AccountHandler
 from handler.block import BlockHandler, BlockRepeatedException
 from storage.factory import StorageFactory
 from storage.memory import MemoryStorage
-from model.block import get_block_hash, get_block_height
+from model.block import *
 
 blocks = mock()
 block_subset_h10 = blocks[:10]
@@ -67,6 +67,25 @@ class TestBlockHandler(unittest.TestCase):
 
         self.assertEqual(self.block_handler.get_chain_reverted(), reverted_blocks)
 
+    def test_should_navigate_back_to_the_genesis_block(self):
+        for block in block_subset_h10:
+            self.block_handler.add_block(block)
+
+        reverted_blocks = self.block_handler.get_chain_reverted()
+
+        def back_to_genesis(block_hash, chain_count = 1):
+            # must not be in the reverted blocks
+            self.assertFalse(block_hash in reverted_blocks)
+            block = self.block_handler.get_block(block_hash)
+            if get_block_height(block) == 0:
+                return chain_count
+
+            return back_to_genesis(get_block_prevhash(block), chain_count + 1)
+
+        right_chain_count = back_to_genesis(self.block_handler.last_hash())
+
+        self.assertEqual(len(block_subset_h10) - right_chain_count, len(reverted_blocks))
+        self.assertEqual(right_chain_count - 1, self.block_handler.get_height())
 
 if __name__ == "__main__":
     unittest.main()
