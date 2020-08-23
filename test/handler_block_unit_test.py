@@ -9,10 +9,17 @@ from model.block import *
 
 blocks = mock()
 block_subset_h10 = blocks[:10]
-block_subset_h11 = blocks[:11]
+block_subset_h15 = blocks[:15]
 
-def get_last(block_subset):
-    return block_subset[len(block_subset) - 1]
+def get_last_highest(block_subset):
+    current_height = -1
+    current_heighest_block = None
+    for block in block_subset:
+        if get_block_height(block) >= current_height:
+            current_height = get_block_height(block)
+            current_heighest_block = block
+
+    return current_heighest_block
 
 class TestBlockHandler(unittest.TestCase):
     def setUp(self):
@@ -21,39 +28,37 @@ class TestBlockHandler(unittest.TestCase):
         self.block_handler = BlockHandler(storage_factory, account_handler)
 
     def test_should_add_non_repeated_blocks(self):
-        for block in block_subset_h10:
+        for block in block_subset_h15:
             self.block_handler.add_block(block)
 
     def test_should_raise_exception_on_adding_repeated_blocks(self):
-        self.block_handler.add_block(block_subset_h10[0])
+        self.block_handler.add_block(block_subset_h15[0])
         with self.assertRaises(BlockRepeatedException):
-            self.block_handler.add_block(block_subset_h10[0])
+            self.block_handler.add_block(block_subset_h15[0])
 
-    def test_should_get_chain_identical_to_block_subset_h10(self):
+    def test_should_get_block_chain_identical_to_block_subset_h15(self):
         chain = []
-        for block in block_subset_h10:
+        for block in block_subset_h15:
             self.block_handler.add_block(block)
             chain.append(get_block_hash(block))
 
-        self.assertEqual(self.block_handler.get_chain(), chain)
+        self.assertEqual(self.block_handler.get_block_chain(), chain)
 
-    def test_should_get_the_last_hash(self):
-        for block in block_subset_h10:
+    def test_should_get_highest_hash(self):
+        for block in block_subset_h15:
             self.block_handler.add_block(block)
 
-        self.assertEqual(self.block_handler.last_hash(), get_block_hash(get_last(block_subset_h10)))
+        highest_block = get_last_highest(block_subset_h15)
+        self.assertEqual(self.block_handler.last_block_hash(), get_block_hash(highest_block))
 
     def test_should_get_the_chain_height(self):
-        for block in block_subset_h11:
+        for block in block_subset_h15:
             self.block_handler.add_block(block)
 
-        self.assertEqual(self.block_handler.get_height(), 1)
+        highest_block = get_last_highest(block_subset_h15)
+        self.assertEqual(self.block_handler.get_height(), get_block_height(highest_block))
 
     def test_should_reorder_blocks_accordinly(self):
-        # please not that the reversion order happens from
-        # the last added block (highest height) up to
-        # the to height equals the current block, so the
-        # order is being kept
         reverted_blocks = [
             get_block_hash(block_subset_h10[1]),
             get_block_hash(block_subset_h10[2]),
@@ -65,13 +70,16 @@ class TestBlockHandler(unittest.TestCase):
         for block in block_subset_h10:
             self.block_handler.add_block(block)
 
-        self.assertEqual(self.block_handler.get_chain_reverted(), reverted_blocks)
+        print(self.block_handler.get_block_chain_reverted())
+        print(reverted_blocks)
+
+        self.assertEqual(self.block_handler.get_block_chain_reverted(), reverted_blocks)
 
     def test_should_navigate_back_to_the_genesis_block(self):
-        for block in block_subset_h10:
+        for block in block_subset_h15:
             self.block_handler.add_block(block)
 
-        reverted_blocks = self.block_handler.get_chain_reverted()
+        reverted_blocks = self.block_handler.get_block_chain_reverted()
 
         def back_to_genesis(block_hash, chain_count = 1):
             # must not be in the reverted blocks
@@ -82,10 +90,8 @@ class TestBlockHandler(unittest.TestCase):
 
             return back_to_genesis(get_block_prevhash(block), chain_count + 1)
 
-        right_chain_count = back_to_genesis(self.block_handler.last_hash())
-
-        self.assertEqual(len(block_subset_h10) - right_chain_count, len(reverted_blocks))
-        self.assertEqual(right_chain_count - 1, self.block_handler.get_height())
+        block_chain_count = back_to_genesis(self.block_handler.last_block_hash())
+        self.assertEqual(block_chain_count - 1, self.block_handler.get_height())
 
 if __name__ == "__main__":
     unittest.main()

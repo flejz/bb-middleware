@@ -15,6 +15,14 @@ class MemoryStorage(GenericStorage):
         self.hashmap[self.ref][key] = data
         return self.hashmap[self.ref][key]
 
+    def remove(self, key):
+        if self.is_list():
+            if key in self.list:
+                self.list.remove(key)
+        else:
+            del self.hashmap[self.ref][key]
+
+
     def get(self, key):
         self.persist(key)
         return self.hashmap[self.ref][key]
