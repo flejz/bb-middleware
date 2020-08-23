@@ -39,8 +39,15 @@ To have a better visualization pipe it with `json_pp` (if available)
 Implemented using flask. No authentication, data check, docs, flask blueprint.
 It's plain and simpe with the purpose of just outputing some data for any incoming request.
 
-```
+The server is running with the `mock/mockchain.json`, but new accounts as well as new blocks could be added no problem.
+
+```bash
 make run-rest-server
+```
+
+To run without the mock file, please set the `MOCK` env var to false as below:
+```bash
+MOCK=false make run-rest-server
 ```
 
 ### api reference
