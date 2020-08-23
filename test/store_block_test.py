@@ -48,5 +48,7 @@ class TestBlockStore(unittest.TestCase):
 
         self.assertEqual(self.block_store.get_height(), 1)
 
+    # TODO: add reorder test
+
 if __name__ == "__main__":
     unittest.main()

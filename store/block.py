@@ -29,7 +29,6 @@ class BlockStore(GenericStore):
         if self.block.get(block_hash) != None:
             raise BlockRepeatedException()
 
-
         # revert on reorder
         self.revert_up_to(block, self.chain.last())
 
