@@ -14,21 +14,23 @@ class AccountHandler(GenericHandler):
         return self.account.get_all()
 
     def get_balance(self, address):
-        return self.account.get(get_account_hash(address))
+        return self.account.get(address)
 
     def set_balance(self, address, amount):
         balance = self.get_balance(address)
         if balance != None:
             raise AccountSetBalanceException()
 
-        account_hash = get_account_hash(address)
-        self.account.update(account_hash, amount)
+        self.account.update(address, amount)
 
     def get_statement(self, address):
-        return self.account_transfers.get(get_account_hash(address)) or []
+        return self.account_transfers.get(address) or []
+
+    def get_medians(self):
+        return self.account_median.get_all()
 
     def get_median(self, address):
-        return self.account_median.get(get_account_hash(address)) or None
+        return self.account_median.get(address)
 
     def update_median(self, address):
         amounts = []

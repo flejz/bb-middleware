@@ -4,7 +4,6 @@ import statistics
 from storage.factory import StorageFactory
 from storage.memory import MemoryStorage
 from handler.account import AccountHandler, AccountSetBalanceException, AccountNotEnoughFundsException
-from model.account import get_account_hash
 
 class TestAccountHandler(unittest.TestCase):
     def setUp(self):
@@ -48,8 +47,8 @@ class TestAccountHandler(unittest.TestCase):
 
         balances = self.account_handler.get_balances()
         self.assertEqual(len(balances.items()), 2)
-        self.assertEqual(balances[get_account_hash("foo")], 7)
-        self.assertEqual(balances[get_account_hash("bar")], 3)
+        self.assertEqual(balances["foo"], 7)
+        self.assertEqual(balances["bar"], 3)
 
     def test_should_get_balance(self):
         transfer = { "sender": "foo", "receiver": "bar", "amount": 3 }

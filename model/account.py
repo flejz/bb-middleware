@@ -1,5 +1,5 @@
-def get_account_hash(address):
-    return address
+def get_address(account):
+    return None if account is None  else account["address"]
 
 def get_amount(transfer):
     return transfer["amount"]

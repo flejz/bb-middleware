@@ -5,12 +5,57 @@ Middleware to calculate and cache blockchain and accounts state given block even
 ## development environment
 python 3.8.2
 
-## to setup the app using virtualenv
+## setup
 ```bash
 make setup
 ```
 
-## to run tests
+## rest server
+
+Implemented using flask. No authentication, data check, docs, flask blueprint.
+It's plain and simpe with the purpose of just outputing some data for any incoming request.
+
+```
+make run-rest-server
+```
+
+### api reference
+#### `POST /chain`
+add a new block to a chain
+payload: `{ number: int, balances: arr, transfers: arr, hash: str, prevhash: str }`
+
+#### `GET /chain`
+retrieves all the blocks in a chain
+response: `[{ number: int, balances: arr, transfers: arr, hash: str, prevhash: str }]`
+
+#### `GET /block/<block_hash>`
+retrieves the block
+params: `block_hash`: str
+response: `{ number: int, balances: arr, transfers: arr, hash: str, prevhash: str }`
+
+#### `POST /account/balance`
+set a new balance
+payload: `{ address: str, amount: int }`
+
+#### `GET /account/balance`
+retrieves all the balances
+response: `{ "foo": float, "bar": float, ... }`
+
+#### `GET /account/balance/<address>`
+retrieves the balance from an address
+params: `address`: str
+response: `amount`: float
+
+#### `GET /account/median`
+retrieves all the medians
+response: `{ "foo": float, "bar": float, ... }`
+
+#### `GET /account/median/<address>`
+retrieves the median from an address
+params: `address`: str
+response: `median`: float
+
+## tests
 
 ```bash
 make test
