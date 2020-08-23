@@ -10,6 +10,30 @@ python 3.8.2
 make setup
 ```
 
+## cli tool
+
+Play a block chain and outputs the overall balance.
+```bash
+./cli.py -h
+```
+
+To run and retrieve the balance:
+```bash
+./cli.py <blockchain.json>
+```
+
+To run and retrieve the median:
+```bash
+./cli.py <blockchain.json> --median
+```
+
+To have a better visualization pipe it with `json_pp` (if available)
+```bash
+./cli.py <blockchain.json> | json_pp
+# or
+./cli.py <blockchain.json> --median | json_pp
+```
+
 ## rest server
 
 Implemented using flask. No authentication, data check, docs, flask blueprint.
