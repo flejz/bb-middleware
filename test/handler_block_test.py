@@ -1,6 +1,7 @@
 import unittest
 
 from mock.blocks import mock
+from handler.account import AccountHandler
 from handler.block import BlockHandler, BlockRepeatedException
 from storage.factory import StorageFactory
 from storage.memory import MemoryStorage
@@ -15,7 +16,9 @@ def get_last(block_subset):
 
 class TestBlockHandler(unittest.TestCase):
     def setUp(self):
-        self.block_handler = BlockHandler(StorageFactory(MemoryStorage))
+        storage_factory = StorageFactory(MemoryStorage)
+        account_handler = AccountHandler(storage_factory)
+        self.block_handler = BlockHandler(storage_factory, account_handler)
 
     def test_should_add_non_repeated_blocks(self):
         for block in block_subset_h10:

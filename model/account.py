@@ -1,6 +1,9 @@
 def get_account_hash(address):
     return address
 
+def get_amount(transfer):
+    return transfer["amount"]
+
 def get_sender(transfer):
     return transfer["sender"]
 
@@ -17,10 +20,10 @@ def set_receiver(base_transfer, value):
     transfer["receiver"] = value
     return transfer
 
-def get_amount(transfer):
-    return transfer["amount"]
+def get_revert(transfer):
+    return False if not "revert" in transfer else transfer["revert"]
 
-def set_revert_type(base_transfer):
+def set_revert(base_transfer):
     transfer = base_transfer.copy()
-    transfer["type"] = "revert"
+    transfer["revert"] = True
     return transfer

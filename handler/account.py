@@ -43,11 +43,12 @@ class AccountHandler(GenericHandler):
     def transfer(self, transfer):
         # grab data and do some checks
         amount = get_amount(transfer)
+        is_revert = get_revert(transfer)
 
         sender = get_sender(transfer)
         sender_balance = self.get_balance(sender)
 
-        if sender_balance < amount:
+        if not is_revert and (sender_balance is None or sender_balance < amount):
             raise AccountNotEnoughFundsException()
 
         receiver = get_receiver(transfer)
@@ -72,7 +73,7 @@ class AccountHandler(GenericHandler):
         reverted_transfer = transfer.copy()
         reverted_transfer = set_sender(reverted_transfer, get_receiver(transfer))
         reverted_transfer = set_receiver(reverted_transfer, get_sender(transfer))
-        reverted_transfer = set_revert_type(reverted_transfer)
+        reverted_transfer = set_revert(reverted_transfer)
 
         self.transfer(reverted_transfer)
 
