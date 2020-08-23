@@ -1,4 +1,4 @@
-# bb-middleware (wip)
+# bb-middleware
 
 Middleware to calculate and cache blockchain and accounts state given block events.
 
@@ -112,4 +112,3 @@ make test
 
 ## to-dos
 - linting
-- make some integration tests

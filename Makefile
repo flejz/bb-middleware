@@ -1,9 +1,10 @@
-TEST_FILES := test.handler_block_test test.handler_account_test
+UNIT_TEST_FILES := test.handler_block_unit_test test.handler_account_unit_test
+INTEGRATION_TEST_FILES := test.block_integration_test
 
 .PHONY: test
 
 test:
-	python3 -m unittest $(TEST_FILES)
+	python3 -m unittest $(UNIT_TEST_FILES) $(INTEGRATION_TEST_FILES)
 
 install:
 	.venv/bin/pip3 install -r requirements.txt
