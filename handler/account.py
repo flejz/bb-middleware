@@ -9,6 +9,7 @@ class AccountHandler(GenericHandler):
         self.account = self.storage_factory.branch('account', StorageType.KEY_VALUE)
         self.account_median = self.storage_factory.branch('account_median', StorageType.KEY_VALUE)
         self.account_transfers = self.storage_factory.branch('account_transfers', StorageType.KEY_VALUE)
+        self.account_transfers_failed = self.storage_factory.branch('account_transfers_failed', StorageType.KEY_VALUE)
 
     def get_balances(self):
         return self.account.get_all()
@@ -25,6 +26,9 @@ class AccountHandler(GenericHandler):
 
     def get_statement(self, address):
         return self.account_transfers.get(address) or []
+
+    def get_failed(self, address):
+        return self.account_transfers_failed.get(address) or []
 
     def get_medians(self):
         return self.account_median.get_all()
@@ -50,11 +54,16 @@ class AccountHandler(GenericHandler):
         sender = get_sender(transfer)
         sender_balance = self.get_balance(sender)
 
-        if not is_revert and (sender_balance is None or sender_balance < amount):
-            raise AccountNotEnoughFundsException()
-
         receiver = get_receiver(transfer)
         receiver_balance = self.get_balance(receiver)
+
+        if not is_revert and (sender_balance is None or sender_balance < amount):
+            sender_transfers_failed = self.get_failed(sender)
+            receiver_transfers_failed = self.get_failed(receiver)
+
+            self.account_transfers_failed.update(sender, sender_transfers_failed + [transfer])
+            self.account_transfers_failed.update(receiver, receiver_transfers_failed + [transfer])
+            return
 
         # update balance
         self.account.update(sender, sender_balance - amount)
@@ -80,7 +89,4 @@ class AccountHandler(GenericHandler):
         self.transfer(reverted_transfer)
 
 class AccountSetBalanceException(Exception):
-    pass
-
-class AccountNotEnoughFundsException(Exception):
     pass

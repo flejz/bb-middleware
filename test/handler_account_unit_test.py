@@ -3,7 +3,7 @@ import statistics
 
 from storage.factory import StorageFactory
 from storage.memory import MemoryStorage
-from handler.account import AccountHandler, AccountSetBalanceException, AccountNotEnoughFundsException
+from handler.account import AccountHandler, AccountSetBalanceException
 
 class TestAccountHandler(unittest.TestCase):
     def setUp(self):
@@ -32,12 +32,13 @@ class TestAccountHandler(unittest.TestCase):
         self.assertEqual(self.account_handler.get_balance("foo"), 0)
         self.assertEqual(self.account_handler.get_balance("bar"), 10)
 
-    def test_should_raise_exception_on_transfer_when_not_enough_funds(self):
+    def test_should_not_transfer_when_not_enough_funds(self):
         transfer = { "sender": "foo", "receiver": "bar", "amount": 10 }
         self.account_handler.set_balance("foo", 5)
         self.account_handler.set_balance("bar", 0)
-        with self.assertRaises(AccountNotEnoughFundsException):
-            self.account_handler.transfer(transfer)
+        self.account_handler.transfer(transfer)
+        self.assertEqual(self.account_handler.get_balance("foo"), 5)
+        self.assertEqual(self.account_handler.get_balance("bar"), 0)
 
     def test_should_get_balances(self):
         transfer = { "sender": "foo", "receiver": "bar", "amount": 3 }

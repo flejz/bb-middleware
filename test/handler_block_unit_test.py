@@ -36,13 +36,17 @@ class TestBlockHandler(unittest.TestCase):
         with self.assertRaises(BlockRepeatedException):
             self.block_handler.add_block(block_subset_h15[0])
 
-    def test_should_get_block_chain_identical_to_block_subset_h15(self):
-        chain = []
+    def test_should_get_proper_block_chain(self):
+        block_chain = [
+            get_block_hash(block_subset_h15[14]),
+            get_block_hash(block_subset_h15[13]),
+            get_block_hash(block_subset_h15[12]),
+        ]
+
         for block in block_subset_h15:
             self.block_handler.add_block(block)
-            chain.append(get_block_hash(block))
 
-        self.assertEqual(self.block_handler.get_block_chain(), chain)
+        self.assertEqual(self.block_handler.get_block_chain(), block_chain)
 
     def test_should_get_highest_hash(self):
         for block in block_subset_h15:
@@ -69,9 +73,6 @@ class TestBlockHandler(unittest.TestCase):
         ]
         for block in block_subset_h10:
             self.block_handler.add_block(block)
-
-        print(self.block_handler.get_block_chain_reverted())
-        print(reverted_blocks)
 
         self.assertEqual(self.block_handler.get_block_chain_reverted(), reverted_blocks)
 
